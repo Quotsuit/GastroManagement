@@ -65,8 +65,8 @@ public class ProductService {
         return productRepository.findByProductNameContainingIgnoreCase(name);
     }
 
-    // Pobierz produkty z określonej kategorii
+    // Pobierz produkty z określonej kategorii - zmieniona metoda
     public List<Product> getProductsByCategory(Integer categoryId) {
-        return productRepository.findByCategoryId(categoryId);
+        return productRepository.findByCategory_CategoryId(categoryId);
     }
 }

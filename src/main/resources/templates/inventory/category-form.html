@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layouts/main-layout :: layout(~{::title}, ~{::section})}">
+<head>
+    <title th:text="${isNew} ? 'Dodaj nową kategorię' : 'Edytuj kategorię'">Formularz kategorii</title>
+</head>
+<body>
+<section class="content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card shadow mb-4">
+                    <div class="card-header">
+                        <h6 class="m-0 font-weight-bold text-primary" th:text="${isNew} ? 'Dodaj nową kategorię' : 'Edytuj kategorię'">
+                            Formularz kategorii
+                        </h6>
+                    </div>
+                    <div class="card-body">
+                        <!-- Komunikat o błędzie -->
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert" th:if="${errorMessage}">
+                            <span th:text="${errorMessage}"></span>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+
+                        <!-- Osobny formularz dla dodawania i edycji -->
+                        <!-- Formularz dodawania -->
+                        <form th:if="${isNew}" th:action="@{/inventory/categories/add}" th:object="${category}" method="post">
+                            <input type="hidden" th:field="*{categoryId}" />
+
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="categoryName">Nazwa kategorii</label>
+                                        <input type="text" class="form-control" id="categoryName" th:field="*{categoryName}" required
+                                               placeholder="Wprowadź nazwę kategorii">
+                                        <small class="form-text text-muted">Nazwa kategorii musi być unikalna</small>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row mb-3">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label for="description">Opis</label>
+                                        <textarea class="form-control" id="description" rows="3" th:field="*{description}"
+                                                  placeholder="Wprowadź opis kategorii (opcjonalnie)"></textarea>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-12 text-right">
+                                    <a th:href="@{/inventory/categories}" class="btn btn-secondary">Anuluj</a>
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="fas fa-save"></i> Zapisz
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+
+                        <!-- Formularz edycji -->
+                        <form th:if="${!isNew}" th:action="@{/inventory/categories/edit/{id}(id=${category.categoryId})}" th:object="${category}" method="post">
+                            <input type="hidden" th:field="*{categoryId}" />
+
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="editCategoryName">Nazwa kategorii</label>
+                                        <input type="text" class="form-control" id="editCategoryName" th:field="*{categoryName}" required
+                                               placeholder="Wprowadź nazwę kategorii">
+                                        <small class="form-text text-muted">Nazwa kategorii musi być unikalna</small>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row mb-3">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label for="editDescription">Opis</label>
+                                        <textarea class="form-control" id="editDescription" rows="3" th:field="*{description}"
+                                                  placeholder="Wprowadź opis kategorii (opcjonalnie)"></textarea>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-12 text-right">
+                                    <a th:href="@{/inventory/categories}" class="btn btn-secondary">Anuluj</a>
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="fas fa-save"></i> Zapisz
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+</body>
+</html>

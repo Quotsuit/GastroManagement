@@ -13,8 +13,8 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
     @Query("SELECT p FROM Product p WHERE p.stockQuantity <= p.minimumQuantity")
     List<Product> findLowStockProducts();
 
-    // Znajdź produkty z określonej kategorii
-    List<Product> findByCategoryId(Integer categoryId);
+    // Zmieniona metoda - używamy poprawnej notacji dla relacji
+    List<Product> findByCategory_CategoryId(Integer categoryId);
 
     // Wyszukaj produkty po nazwie (zawierającej frazę)
     List<Product> findByProductNameContainingIgnoreCase(String productName);

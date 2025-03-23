@@ -14,10 +14,12 @@ import java.util.Optional;
 public class ProductController {
 
     private final ProductService productService;
+    private final ProductCategoryService categoryService;
 
     @Autowired
-    public ProductController(ProductService productService) {
+    public ProductController(ProductService productService, ProductCategoryService categoryService) {
         this.productService = productService;
+        this.categoryService = categoryService;
     }
 
     // Wyświetl listę wszystkich produktów
@@ -41,12 +43,19 @@ public class ProductController {
     @GetMapping("/add")
     public String showAddForm(Model model) {
         model.addAttribute("product", new Product());
+        model.addAttribute("allCategories", categoryService.getAllCategories());
         return "inventory/product-form";
     }
 
     // Obsługa dodawania produktu
     @PostMapping("/add")
-    public String addProduct(@ModelAttribute("product") Product product, RedirectAttributes redirectAttributes) {
+    public String addProduct(@ModelAttribute("product") Product product, @RequestParam(name = "category.categoryId", required = false) Integer categoryId, RedirectAttributes redirectAttributes) {
+        // Ustawienie kategorii, jeśli wybrano
+        if (categoryId != null && categoryId > 0) {
+            Optional<ProductCategory> category = categoryService.getCategoryById(categoryId);
+            category.ifPresent(product::setCategory);
+        }
+
         productService.saveProduct(product);
         redirectAttributes.addFlashAttribute("successMessage", "Produkt został pomyślnie dodany.");
         return "redirect:/inventory";
@@ -58,6 +67,7 @@ public class ProductController {
         Optional<Product> product = productService.getProductById(id);
         if (product.isPresent()) {
             model.addAttribute("product", product.get());
+            model.addAttribute("allCategories", categoryService.getAllCategories());
             return "inventory/product-form";
         } else {
             return "redirect:/inventory";
@@ -66,8 +76,17 @@ public class ProductController {
 
     // Obsługa aktualizacji produktu
     @PostMapping("/edit/{id}")
-    public String updateProduct(@PathVariable int id, @ModelAttribute("product") Product product, RedirectAttributes redirectAttributes) {
+    public String updateProduct(@PathVariable int id, @ModelAttribute("product") Product product, @RequestParam(name = "category.categoryId", required = false) Integer categoryId, RedirectAttributes redirectAttributes) {
         product.setProductId(id);
+
+        // Ustawienie kategorii, jeśli wybrano
+        if (categoryId != null && categoryId > 0) {
+            Optional<ProductCategory> category = categoryService.getCategoryById(categoryId);
+            category.ifPresent(product::setCategory);
+        } else {
+            product.setCategory(null);
+        }
+
         productService.updateProduct(product);
         redirectAttributes.addFlashAttribute("successMessage", "Produkt został pomyślnie zaktualizowany.");
         return "redirect:/inventory";
@@ -108,5 +127,26 @@ public class ProductController {
         model.addAttribute("products", products);
         model.addAttribute("searchQuery", query);
         return "inventory/product-list";
+    }
+
+    // Filtrowanie produktów według kategorii
+    @GetMapping("/category/{categoryId}")
+    public String filterByCategory(@PathVariable int categoryId, Model model) {
+        Optional<ProductCategory> category = categoryService.getCategoryById(categoryId);
+
+        if (category.isPresent()) {
+            List<Product> products = productService.getProductsByCategory(categoryId);
+            model.addAttribute("products", products);
+            model.addAttribute("categoryFilter", category.get().getCategoryName());
+            return "inventory/product-list";
+        } else {
+            return "redirect:/inventory";
+        }
+    }
+
+    // Dodanie listy kategorii do wszystkich widoków
+    @ModelAttribute("allCategories")
+    public List<ProductCategory> getAllCategories() {
+        return categoryService.getAllCategories();
     }
 }

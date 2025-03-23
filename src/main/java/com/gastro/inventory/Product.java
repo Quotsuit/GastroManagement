@@ -16,11 +16,9 @@ public class Product {
     @Column(name = "product_id")
     private int productId;
 
-    @Column(name = "category_id")
-    private Integer categoryId;
-
-    @Transient
-    private String categoryName;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "category_id")
+    private ProductCategory category;
 
     @Column(name = "product_name", nullable = false)
     private String productName;
@@ -44,17 +42,15 @@ public class Product {
     @Temporal(TemporalType.DATE)
     private Date expiryDate;
 
-    // Pozostała część klasy pozostaje bez zmian...
-
     // Konstruktor domyślny
     public Product() {
     }
 
     // Konstruktor z parametrami
-    public Product(Integer categoryId, String productName, String description, String unit,
+    public Product(ProductCategory category, String productName, String description, String unit,
                    BigDecimal purchasePrice, BigDecimal stockQuantity, BigDecimal minimumQuantity,
                    Date expiryDate) {
-        this.categoryId = categoryId;
+        this.category = category;
         this.productName = productName;
         this.description = description;
         this.unit = unit;
@@ -64,7 +60,7 @@ public class Product {
         this.expiryDate = expiryDate;
     }
 
-    // Gettery i settery pozostają bez zmian...
+    // Gettery i settery
     public int getProductId() {
         return productId;
     }
@@ -73,20 +69,33 @@ public class Product {
         this.productId = productId;
     }
 
+    public ProductCategory getCategory() {
+        return category;
+    }
+
+    public void setCategory(ProductCategory category) {
+        this.category = category;
+    }
+
+    // Metody pomocnicze dla kompatybilności ze starszym kodem
     public Integer getCategoryId() {
-        return categoryId;
+        return category != null ? category.getCategoryId() : null;
     }
 
     public void setCategoryId(Integer categoryId) {
-        this.categoryId = categoryId;
+        // Ta metoda zostaje dla kompatybilności, ale rzeczywiste ustawienie
+        // kategorii powinno odbywać się przez setCategory()
     }
 
     public String getCategoryName() {
-        return categoryName;
+        return category != null ? category.getCategoryName() : null;
     }
 
+    // Dodajemy brakującą metodę setCategoryName
     public void setCategoryName(String categoryName) {
-        this.categoryName = categoryName;
+        // Ta metoda jest tylko dla kompatybilności
+        // W rzeczywistości kategoria powinna być ustawiana przez setCategory()
+        // Możesz dodać logikę wyszukiwania kategorii jeśli potrzebujesz, ale to powinno być obsługiwane w serwisie
     }
 
     public String getProductName() {

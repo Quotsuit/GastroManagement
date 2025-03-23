@@ -16,10 +16,10 @@
                         </h6>
                     </div>
                     <div class="card-body">
-                        <form th:action="${product.productId == 0} ? @{/inventory/add} : @{/inventory/edit/{id}(id=${product.productId})}"
-                              th:object="${product}" method="post">
+                        <!-- Formularz dla nowego produktu -->
+                        <form th:if="${product.productId == 0}" th:action="@{/inventory/add}" th:object="${product}" method="post">
 
-                            <!-- Ukryte pole dla ID (w przypadku edycji) -->
+                            <!-- Ukryte pole dla ID -->
                             <input type="hidden" th:field="*{productId}" />
 
                             <div class="row mb-3">
@@ -31,16 +31,19 @@
                                 </div>
                                 <div class="col-md-3">
                                     <div class="form-group">
-                                        <label for="categoryId">Kategoria</label>
-                                        <select class="form-control" id="categoryId" th:field="*{categoryId}">
+                                        <label for="category">Kategoria</label>
+                                        <select class="form-control" id="category" name="category.categoryId">
                                             <option value="">-- Wybierz kategorię --</option>
-                                            <!-- TODO: Dodać prawdziwe kategorie pobrane z bazy danych -->
-                                            <option value="1">Nabiał</option>
-                                            <option value="2">Mięso</option>
-                                            <option value="3">Warzywa</option>
-                                            <option value="4">Owoce</option>
-                                            <option value="5">Napoje</option>
+                                            <option th:each="cat : ${allCategories}"
+                                                    th:value="${cat.categoryId}"
+                                                    th:text="${cat.categoryName}"
+                                                    th:selected="${product.category != null && product.category.categoryId == cat.categoryId}">
+                                                Nazwa kategorii
+                                            </option>
                                         </select>
+                                        <small class="form-text text-muted">
+                                            <a th:href="@{/inventory/categories/add}" target="_blank">Dodaj nową kategorię</a>
+                                        </small>
                                     </div>
                                 </div>
                                 <div class="col-md-3">
@@ -102,6 +105,109 @@
                                     <div class="form-group">
                                         <label for="expiryDate">Data ważności</label>
                                         <input type="date" class="form-control" id="expiryDate" th:field="*{expiryDate}">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-12 text-right">
+                                    <a th:href="@{/inventory}" class="btn btn-secondary">Anuluj</a>
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="fas fa-save"></i> Zapisz
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+
+                        <!-- Formularz dla edycji produktu -->
+                        <form th:if="${product.productId != 0}" th:action="@{/inventory/edit/{id}(id=${product.productId})}" th:object="${product}" method="post">
+
+                            <!-- Ukryte pole dla ID -->
+                            <input type="hidden" th:field="*{productId}" />
+
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="editProductName">Nazwa produktu</label>
+                                        <input type="text" class="form-control" id="editProductName" th:field="*{productName}" required>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label for="editCategory">Kategoria</label>
+                                        <select class="form-control" id="editCategory" name="category.categoryId">
+                                            <option value="">-- Wybierz kategorię --</option>
+                                            <option th:each="cat : ${allCategories}"
+                                                    th:value="${cat.categoryId}"
+                                                    th:text="${cat.categoryName}"
+                                                    th:selected="${product.category != null && product.category.categoryId == cat.categoryId}">
+                                                Nazwa kategorii
+                                            </option>
+                                        </select>
+                                        <small class="form-text text-muted">
+                                            <a th:href="@{/inventory/categories/add}" target="_blank">Dodaj nową kategorię</a>
+                                        </small>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label for="editUnit">Jednostka</label>
+                                        <select class="form-control" id="editUnit" th:field="*{unit}" required>
+                                            <option value="kg">kilogram (kg)</option>
+                                            <option value="g">gram (g)</option>
+                                            <option value="l">litr (l)</option>
+                                            <option value="ml">mililitr (ml)</option>
+                                            <option value="szt.">sztuka (szt.)</option>
+                                            <option value="op.">opakowanie (op.)</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row mb-3">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label for="editDescription">Opis</label>
+                                        <textarea class="form-control" id="editDescription" rows="3" th:field="*{description}"></textarea>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row mb-3">
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label for="editPurchasePrice">Cena zakupu</label>
+                                        <div class="input-group">
+                                            <input type="number" class="form-control" id="editPurchasePrice" th:field="*{purchasePrice}"
+                                                   step="0.01" min="0" required>
+                                            <span class="input-group-text">PLN</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label for="editStockQuantity">Stan magazynowy</label>
+                                        <div class="input-group">
+                                            <input type="number" class="form-control" id="editStockQuantity" th:field="*{stockQuantity}"
+                                                   step="0.01" min="0">
+                                            <span class="input-group-text" th:text="${product.unit}">kg</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label for="editMinimumQuantity">Minimalny stan</label>
+                                        <div class="input-group">
+                                            <input type="number" class="form-control" id="editMinimumQuantity" th:field="*{minimumQuantity}"
+                                                   step="0.01" min="0">
+                                            <span class="input-group-text" th:text="${product.unit}">kg</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label for="editExpiryDate">Data ważności</label>
+                                        <input type="date" class="form-control" id="editExpiryDate" th:field="*{expiryDate}">
                                     </div>
                                 </div>
                             </div>
