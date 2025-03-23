@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layouts/main-layout :: layout(~{::title}, ~{::section})}">
+<head>
+    <title>Edycja dostawy</title>
+</head>
+<body>
+<section class="content">
+    <div class="container-fluid">
+        <!-- Nagłówek strony -->
+        <div class="d-sm-flex align-items-center justify-content-between mb-4">
+            <h1 class="h3 mb-0 text-gray-800">Edycja dostawy #<span th:text="${delivery.deliveryId}">1</span></h1>
+            <div>
+                <a th:href="@{/inventory/deliveries}" class="btn btn-sm btn-secondary">
+                    <i class="fas fa-arrow-left"></i> Powrót do listy dostaw
+                </a>
+                <a th:href="@{/inventory/deliveries/{id}(id=${delivery.deliveryId})}" class="btn btn-sm btn-info">
+                    <i class="fas fa-eye"></i> Podgląd dostawy
+                </a>
+            </div>
+        </div>
+
+        <!-- Komunikaty informacyjne -->
+        <div class="alert alert-success alert-dismissible fade show" role="alert" th:if="${successMessage}">
+            <span th:text="${successMessage}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+
+        <div class="alert alert-danger alert-dismissible fade show" role="alert" th:if="${errorMessage}">
+            <span th:text="${errorMessage}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+
+        <!-- Informacje o dostawie -->
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card shadow mb-4">
+                    <div class="card-header">
+                        <h6 class="m-0 font-weight-bold text-primary">Informacje o dostawie</h6>
+                    </div>
+                    <div class="card-body">
+                        <form th:action="@{/inventory/deliveries/edit/{id}(id=${delivery.deliveryId})}" method="post" th:object="${delivery}">
+                            <div class="row mb-3">
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label for="deliveryDate">Data dostawy</label>
+                                        <input type="date" class="form-control" id="deliveryDate" th:field="*{deliveryDate}" required>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label for="supplierName">Dostawca</label>
+                                        <input type="text" class="form-control" id="supplierName" th:field="*{supplierName}" required>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label for="invoiceNumber">Numer faktury</label>
+                                        <input type="text" class="form-control" id="invoiceNumber" th:field="*{invoiceNumber}" placeholder="FV/RRRR/MM">
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label for="status">Status</label>
+                                        <input type="text" class="form-control" id="status" th:value="${delivery.status.displayName}" readonly>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row mb-3">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label for="notes">Uwagi</label>
+                                        <textarea class="form-control" id="notes" th:field="*{notes}" rows="2"></textarea>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-12 text-end">
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="fas fa-save"></i> Aktualizuj informacje
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Akcje -->
+        <div class="row mb-4">
+            <div class="col-md-12">
+                <div class="card shadow">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <h4>Wartość dostawy: <strong th:text="${#numbers.formatDecimal(delivery.totalAmount, 1, 2) + ' PLN'}">0.00 PLN</strong></h4>
+                            </div>
+                            <div class="col-md-8 text-end">
+                                <div th:if="${delivery.status.name() == 'PLANOWANA'}">
+                                    <a th:href="@{/inventory/deliveries/{id}/start(id=${delivery.deliveryId})}" class="btn btn-warning">
+                                        <i class="fas fa-truck-loading"></i> Rozpocznij dostawę
+                                    </a>
+                                </div>
+                                <div th:if="${delivery.status.name() == 'W_TRAKCIE'}">
+                                    <a th:href="@{/inventory/deliveries/{id}/complete(id=${delivery.deliveryId})}" class="btn btn-success"
+                                       onclick="return confirm('Czy na pewno chcesz zakończyć dostawę i dodać produkty do magazynu?');">
+                                        <i class="fas fa-check-circle"></i> Zakończ dostawę i dodaj do magazynu
+                                    </a>
+                                </div>
+                                <a th:href="@{/inventory/deliveries/{id}/delete(id=${delivery.deliveryId})}" class="btn btn-danger ml-2"
+                                   onclick="return confirm('Czy na pewno chcesz usunąć tę dostawę?');">
+                                    <i class="fas fa-trash"></i> Usuń dostawę
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Produkty w dostawie -->
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card shadow mb-4">
+                    <div class="card-header">
+                        <h6 class="m-0 font-weight-bold text-primary">Produkty w dostawie</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive mb-4">
+                            <table class="table table-bordered table-hover" width="100%" cellspacing="0">
+                                <thead class="table-light">
+                                <tr>
+                                    <th>Produkt</th>
+                                    <th>Ilość</th>
+                                    <th>Jednostka</th>
+                                    <th>Cena jedn.</th>
+                                    <th>Wartość</th>
+                                    <th>Uwagi</th>
+                                    <th>Akcje</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr th:each="item : ${delivery.deliveryItems}">
+                                    <td th:text="${item.product.productName}">Nazwa produktu</td>
+                                    <td th:text="${#numbers.formatDecimal(item.quantity, 1, 3)}">1.000</td>
+                                    <td th:text="${item.product.unit}">kg</td>
+                                    <td th:text="${#numbers.formatDecimal(item.unitPrice, 1, 2) + ' PLN'}">10.00 PLN</td>
+                                    <td th:text="${#numbers.formatDecimal(item.totalValue, 1, 2) + ' PLN'}">10.00 PLN</td>
+                                    <td th:text="${item.notes}">Uwagi</td>
+                                    <td>
+                                        <a th:href="@{/inventory/deliveries/{deliveryId}/items/delete/{itemId}(deliveryId=${delivery.deliveryId}, itemId=${item.itemId})}"
+                                           class="btn btn-sm btn-danger"
+                                           th:if="${!item.alreadyAddedToStock}"
+                                           onclick="return confirm('Czy na pewno chcesz usunąć ten produkt z dostawy?');">
+                                            <i class="fas fa-trash"></i>
+                                        </a>
+                                        <span class="badge bg-success" th:if="${item.alreadyAddedToStock}">Dodane do magazynu</span>
+                                    </td>
+                                </tr>
+                                <tr th:if="${#lists.isEmpty(delivery.deliveryItems)}">
+                                    <td colspan="7" class="text-center">Brak produktów w dostawie</td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- Dodawanie nowego produktu (tylko dla dostaw nie zakończonych) -->
+                        <div th:if="${delivery.status.name() != 'ZAKONCZONA'}">
+                            <h6 class="font-weight-bold">Dodaj produkt do dostawy</h6>
+                            <form th:action="@{/inventory/deliveries/{id}/items/add(id=${delivery.deliveryId})}" method="post" class="mb-3">
+                                <div class="row mb-3">
+                                    <div class="col-md-5">
+                                        <div class="form-group">
+                                            <label for="productId">Produkt</label>
+                                            <select class="form-control" id="productId" name="productId" required>
+                                                <option value="">-- Wybierz produkt --</option>
+                                                <option th:each="product : ${allProducts}"
+                                                        th:value="${product.productId}"
+                                                        th:text="${product.productName + ' (' + product.unit + ')'}">
+                                                    Nazwa produktu (kg)
+                                                </option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <div class="form-group">
+                                            <label for="quantity">Ilość</label>
+                                            <input type="number" class="form-control" id="quantity" name="quantity" step="0.001" min="0.001" required>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <div class="form-group">
+                                            <label for="unitPrice">Cena jedn. (PLN)</label>
+                                            <input type="number" class="form-control" id="unitPrice" name="unitPrice" step="0.01" min="0" required>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label for="itemNotes">Uwagi</label>
+                                            <input type="text" class="form-control" id="itemNotes" name="notes">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12 text-end">
+                                        <button type="submit" class="btn btn-primary">
+                                            <i class="fas fa-plus-circle"></i> Dodaj produkt
+                                        </button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+</body>
+</html>

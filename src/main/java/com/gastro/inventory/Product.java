@@ -1,6 +1,7 @@
 package com.gastro.inventory;
 
 import javax.persistence.*;
+import org.springframework.format.annotation.DateTimeFormat;
 import java.math.BigDecimal;
 import java.util.Date;
 
@@ -40,6 +41,7 @@ public class Product {
 
     @Column(name = "expiry_date")
     @Temporal(TemporalType.DATE)
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date expiryDate;
 
     // Konstruktor domyślny

@@ -52,30 +52,37 @@ public class ProductController {
     public String addProduct(@ModelAttribute Product product,
                              @RequestParam(name = "category.categoryId", required = false) Integer categoryId,
                              RedirectAttributes redirectAttributes) {
-        // Debugowanie
-        System.out.println("Otrzymany produkt: " + product);
-        System.out.println("Otrzymane categoryId: " + categoryId);
-
-        // Ustawienie kategorii, jeśli wybrano
-        if (categoryId != null && categoryId > 0) {
-            Optional<ProductCategory> category = categoryService.getCategoryById(categoryId);
-            if (category.isPresent()) {
-                product.setCategory(category.get());
-                System.out.println("Ustawiono kategorię: " + category.get().getCategoryName());
+        try {
+            // Ustawienie kategorii, jeśli wybrano
+            if (categoryId != null && categoryId > 0) {
+                Optional<ProductCategory> category = categoryService.getCategoryById(categoryId);
+                if (category.isPresent()) {
+                    product.setCategory(category.get());
+                }
             } else {
-                System.out.println("Nie znaleziono kategorii o ID: " + categoryId);
+                product.setCategory(null);
             }
-        } else {
-            System.out.println("Nie wybrano kategorii");
-            product.setCategory(null);
+
+            // Upewnij się, że żadne z wartości nie jest null
+            if (product.getStockQuantity() == null) {
+                product.setStockQuantity(java.math.BigDecimal.ZERO);
+            }
+            if (product.getMinimumQuantity() == null) {
+                product.setMinimumQuantity(java.math.BigDecimal.ZERO);
+            }
+            if (product.getPurchasePrice() == null) {
+                redirectAttributes.addFlashAttribute("errorMessage", "Proszę podać cenę zakupu.");
+                return "redirect:/inventory/add";
+            }
+
+            // Zapisz produkt
+            Product savedProduct = productService.saveProduct(product);
+            redirectAttributes.addFlashAttribute("successMessage", "Produkt został pomyślnie dodany.");
+            return "redirect:/inventory";
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Błąd podczas dodawania produktu: " + e.getMessage());
+            return "redirect:/inventory/add";
         }
-
-        // Zapisz produkt
-        Product savedProduct = productService.saveProduct(product);
-        System.out.println("Zapisano produkt: " + savedProduct);
-
-        redirectAttributes.addFlashAttribute("successMessage", "Produkt został pomyślnie dodany.");
-        return "redirect:/inventory";
     }
 
     // Formularz edycji produktu
@@ -98,36 +105,50 @@ public class ProductController {
                                 @ModelAttribute Product product,
                                 @RequestParam(name = "category.categoryId", required = false) Integer categoryId,
                                 RedirectAttributes redirectAttributes) {
-        // Debugowanie
-        System.out.println("Aktualizacja produktu ID: " + id);
-        System.out.println("Otrzymane categoryId: " + categoryId);
+        try {
+            product.setProductId(id);
 
-        product.setProductId(id);
-
-        // Ustawienie kategorii, jeśli wybrano
-        if (categoryId != null && categoryId > 0) {
-            Optional<ProductCategory> category = categoryService.getCategoryById(categoryId);
-            if (category.isPresent()) {
-                product.setCategory(category.get());
-                System.out.println("Ustawiono kategorię: " + category.get().getCategoryName());
+            // Ustawienie kategorii, jeśli wybrano
+            if (categoryId != null && categoryId > 0) {
+                Optional<ProductCategory> category = categoryService.getCategoryById(categoryId);
+                if (category.isPresent()) {
+                    product.setCategory(category.get());
+                }
+            } else {
+                product.setCategory(null);
             }
-        } else {
-            System.out.println("Usunięto kategorię z produktu");
-            product.setCategory(null);
+
+            // Upewnij się, że żadne z wartości nie jest null
+            if (product.getStockQuantity() == null) {
+                product.setStockQuantity(java.math.BigDecimal.ZERO);
+            }
+            if (product.getMinimumQuantity() == null) {
+                product.setMinimumQuantity(java.math.BigDecimal.ZERO);
+            }
+            if (product.getPurchasePrice() == null) {
+                redirectAttributes.addFlashAttribute("errorMessage", "Proszę podać cenę zakupu.");
+                return "redirect:/inventory/edit/" + id;
+            }
+
+            // Zaktualizuj produkt
+            productService.updateProduct(product);
+            redirectAttributes.addFlashAttribute("successMessage", "Produkt został pomyślnie zaktualizowany.");
+            return "redirect:/inventory";
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Błąd podczas aktualizacji produktu: " + e.getMessage());
+            return "redirect:/inventory/edit/" + id;
         }
-
-        // Zaktualizuj produkt
-        productService.updateProduct(product);
-
-        redirectAttributes.addFlashAttribute("successMessage", "Produkt został pomyślnie zaktualizowany.");
-        return "redirect:/inventory";
     }
 
     // Usuwanie produktu
     @GetMapping("/delete/{id}")
     public String deleteProduct(@PathVariable int id, RedirectAttributes redirectAttributes) {
-        productService.deleteProduct(id);
-        redirectAttributes.addFlashAttribute("successMessage", "Produkt został pomyślnie usunięty.");
+        try {
+            productService.deleteProduct(id);
+            redirectAttributes.addFlashAttribute("successMessage", "Produkt został pomyślnie usunięty.");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Błąd podczas usuwania produktu: " + e.getMessage());
+        }
         return "redirect:/inventory";
     }
 
@@ -147,8 +168,12 @@ public class ProductController {
     // Obsługa aktualizacji stanu magazynowego
     @PostMapping("/update-stock/{id}")
     public String updateStock(@PathVariable int id, @RequestParam("stockQuantity") double stockQuantity, RedirectAttributes redirectAttributes) {
-        productService.updateProductStock(id, stockQuantity);
-        redirectAttributes.addFlashAttribute("successMessage", "Stan magazynowy został pomyślnie zaktualizowany.");
+        try {
+            productService.updateProductStock(id, stockQuantity);
+            redirectAttributes.addFlashAttribute("successMessage", "Stan magazynowy został pomyślnie zaktualizowany.");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Błąd podczas aktualizacji stanu magazynowego: " + e.getMessage());
+        }
         return "redirect:/inventory";
     }
 

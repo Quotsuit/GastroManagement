@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layouts/main-layout :: layout(~{::title}, ~{::section})}">
+<head>
+    <title>Nowa dostawa</title>
+</head>
+<body>
+<section class="content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card shadow mb-4">
+                    <div class="card-header">
+                        <h6 class="m-0 font-weight-bold text-primary">Nowa dostawa</h6>
+                    </div>
+                    <div class="card-body">
+                        <!-- Komunikaty informacyjne -->
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert" th:if="${errorMessage}">
+                            <span th:text="${errorMessage}"></span>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+
+                        <form th:action="@{/inventory/deliveries/add}" method="post" th:object="${delivery}">
+                            <div class="row mb-3">
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label for="deliveryDate">Data dostawy</label>
+                                        <input type="date" class="form-control" id="deliveryDate" th:field="*{deliveryDate}" required>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label for="supplierName">Dostawca</label>
+                                        <input type="text" class="form-control" id="supplierName" th:field="*{supplierName}" required>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label for="invoiceNumber">Numer faktury</label>
+                                        <input type="text" class="form-control" id="invoiceNumber" th:field="*{invoiceNumber}" placeholder="FV/RRRR/MM">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row mb-3">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label for="notes">Uwagi</label>
+                                        <textarea class="form-control" id="notes" th:field="*{notes}" rows="3"></textarea>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-12 text-end">
+                                    <a th:href="@{/inventory/deliveries}" class="btn btn-secondary">Anuluj</a>
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="fas fa-save"></i> Zapisz i przejdź do dodawania produktów
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+</body>
+</html>

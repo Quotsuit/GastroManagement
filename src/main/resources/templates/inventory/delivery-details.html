@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layouts/main-layout :: layout(~{::title}, ~{::section})}">
+<head>
+    <title>Szczegóły dostawy</title>
+</head>
+<body>
+<section class="content">
+    <div class="container-fluid">
+        <!-- Nagłówek strony -->
+        <div class="d-sm-flex align-items-center justify-content-between mb-4">
+            <h1 class="h3 mb-0 text-gray-800">Dostawa #<span th:text="${delivery.deliveryId}">1</span></h1>
+            <div>
+                <a th:href="@{/inventory/deliveries}" class="btn btn-sm btn-secondary">
+                    <i class="fas fa-arrow-left"></i> Powrót do listy dostaw
+                </a>
+                <a th:if="${delivery.status.name() != 'ZAKONCZONA'}"
+                   th:href="@{/inventory/deliveries/edit/{id}(id=${delivery.deliveryId})}"
+                   class="btn btn-sm btn-primary">
+                    <i class="fas fa-edit"></i> Edytuj dostawę
+                </a>
+            </div>
+        </div>
+
+        <!-- Komunikaty informacyjne -->
+        <div class="alert alert-success alert-dismissible fade show" role="alert" th:if="${successMessage}">
+            <span th:text="${successMessage}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+
+        <div class="alert alert-danger alert-dismissible fade show" role="alert" th:if="${errorMessage}">
+            <span th:text="${errorMessage}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+
+        <!-- Informacje o dostawie -->
+        <div class="row">
+            <div class="col-lg-4 col-md-6 mb-4">
+                <div class="card border-left-primary shadow h-100 py-2">
+                    <div class="card-body">
+                        <div class="row no-gutters align-items-center">
+                            <div class="col mr-2">
+                                <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                    Data dostawy
+                                </div>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800" th:text="${#dates.format(delivery.deliveryDate, 'dd-MM-yyyy')}">
+                                    01-01-2022
+                                </div>
+                            </div>
+                            <div class="col-auto">
+                                <i class="fas fa-calendar fa-2x text-gray-300"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4 col-md-6 mb-4">
+                <div class="card border-left-success shadow h-100 py-2">
+                    <div class="card-body">
+                        <div class="row no-gutters align-items-center">
+                            <div class="col mr-2">
+                                <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                    Wartość dostawy
+                                </div>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800" th:text="${#numbers.formatDecimal(delivery.totalAmount, 1, 2) + ' PLN'}">
+                                    100.00 PLN
+                                </div>
+                            </div>
+                            <div class="col-auto">
+                                <i class="fas fa-dollar-sign fa-2x text-gray-300"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4 col-md-6 mb-4">
+                <div class="card border-left-info shadow h-100 py-2">
+                    <div class="card-body">
+                        <div class="row no-gutters align-items-center">
+                            <div class="col mr-2">
+                                <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                                    Status
+                                </div>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800" th:text="${delivery.status.displayName}">
+                                    Status
+                                </div>
+                            </div>
+                            <div class="col-auto">
+                                <i class="fas fa-clipboard-list fa-2x text-gray-300"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Szczegóły dostawy -->
+        <div class="row mb-4">
+            <div class="col-md-12">
+                <div class="card shadow">
+                    <div class="card-header py-3">
+                        <h6 class="m-0 font-weight-bold text-primary">Szczegóły dostawy</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <table class="table table-borderless">
+                                    <tr>
+                                        <th style="width: 30%">Dostawca:</th>
+                                        <td th:text="${delivery.supplierName}">Nazwa dostawcy</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Numer faktury:</th>
+                                        <td th:text="${delivery.invoiceNumber ?: '-'}">FV/2022/01</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Data utworzenia:</th>
+                                        <td th:text="${#dates.format(delivery.createdAt, 'dd-MM-yyyy HH:mm')}">01-01-2022 12:00</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Ostatnia aktualizacja:</th>
+                                        <td th:text="${#dates.format(delivery.updatedAt, 'dd-MM-yyyy HH:mm')}">01-01-2022 12:00</td>
+                                    </tr>
+                                </table>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="card bg-light">
+                                    <div class="card-body">
+                                        <h6 class="card-title">Uwagi:</h6>
+                                        <p class="card-text" th:text="${delivery.notes ?: 'Brak uwag'}">Uwagi do dostawy...</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Akcje -->
+        <div class="row mb-4" th:if="${delivery.status.name() != 'ZAKONCZONA'}">
+            <div class="col-md-12">
+                <div class="card shadow">
+                    <div class="card-body d-flex justify-content-between align-items-center">
+                        <div th:if="${delivery.status.name() == 'PLANOWANA'}">
+                            <a th:href="@{/inventory/deliveries/{id}/start(id=${delivery.deliveryId})}" class="btn btn-warning">
+                                <i class="fas fa-truck-loading"></i> Rozpocznij dostawę
+                            </a>
+                        </div>
+                        <div th:if="${delivery.status.name() == 'W_TRAKCIE'}">
+                            <a th:href="@{/inventory/deliveries/{id}/complete(id=${delivery.deliveryId})}" class="btn btn-success"
+                               onclick="return confirm('Czy na pewno chcesz zakończyć dostawę i dodać produkty do magazynu?');">
+                                <i class="fas fa-check-circle"></i> Zakończ dostawę i dodaj do magazynu
+                            </a>
+                        </div>
+                        <div>
+                            <a th:href="@{/inventory/deliveries/{id}/delete(id=${delivery.deliveryId})}" class="btn btn-danger"
+                               onclick="return confirm('Czy na pewno chcesz usunąć tę dostawę?');">
+                                <i class="fas fa-trash"></i> Usuń dostawę
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Produkty w dostawie -->
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card shadow mb-4">
+                    <div class="card-header py-3">
+                        <h6 class="m-0 font-weight-bold text-primary">Produkty w dostawie</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-hover" width="100%" cellspacing="0">
+                                <thead class="table-light">
+                                <tr>
+                                    <th>#</th>
+                                    <th>Produkt</th>
+                                    <th>Ilość</th>
+                                    <th>Jednostka</th>
+                                    <th>Cena jedn.</th>
+                                    <th>Wartość</th>
+                                    <th>Uwagi</th>
+                                    <th>Status</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr th:each="item, stat : ${delivery.deliveryItems}">
+                                    <td th:text="${stat.count}">1</td>
+                                    <td th:text="${item.product.productName}">Nazwa produktu</td>
+                                    <td th:text="${#numbers.formatDecimal(item.quantity, 1, 3)}">1.000</td>
+                                    <td th:text="${item.product.unit}">kg</td>
+                                    <td th:text="${#numbers.formatDecimal(item.unitPrice, 1, 2) + ' PLN'}">10.00 PLN</td>
+                                    <td th:text="${#numbers.formatDecimal(item.totalValue, 1, 2) + ' PLN'}">10.00 PLN</td>
+                                    <td th:text="${item.notes ?: '-'}">Uwagi</td>
+                                    <td>
+                                        <span class="badge" th:classappend="${item.alreadyAddedToStock ? 'bg-success' : 'bg-warning'}"
+                                              th:text="${item.alreadyAddedToStock ? 'Dodane do magazynu' : 'Oczekuje'}">
+                                            Status
+                                        </span>
+                                    </td>
+                                </tr>
+                                <tr th:if="${#lists.isEmpty(delivery.deliveryItems)}">
+                                    <td colspan="8" class="text-center">Brak produktów w dostawie</td>
+                                </tr>
+                                </tbody>
+                                <tfoot th:if="${!#lists.isEmpty(delivery.deliveryItems)}">
+                                <tr class="table-light">
+                                    <th colspan="5" class="text-end">Łącznie:</th>
+                                    <th th:text="${#numbers.formatDecimal(delivery.totalAmount, 1, 2) + ' PLN'}">100.00 PLN</th>
+                                    <th colspan="2"></th>
+                                </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+</body>
+</html>
