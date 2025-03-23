@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title th:replace="${title}">GastroManagement</title>
+    <title th:replace="${title}">GastroApp</title>
 
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" th:href="@{/webjars/bootstrap/5.2.3/css/bootstrap.min.css}">
@@ -13,120 +13,160 @@
 
     <!-- Custom CSS -->
     <link rel="stylesheet" th:href="@{/static/css/style.css}">
+
+    <style>
+        /* Dodatkowe style dla aktywnych elementów menu */
+        .sidebar .list-unstyled li.active > a {
+            color: #fff;
+            background-color: #4e73df;
+        }
+
+        /* Upewnij się, że sidebar ma dobrą szerokość i jest widoczny */
+        .sidebar {
+            min-width: 250px;
+            max-width: 250px;
+            min-height: 100vh;
+            background: #343a40;
+            color: #fff;
+            transition: all 0.3s;
+        }
+
+        .content-wrapper {
+            width: 100%;
+        }
+
+        /* Poprawki dla menu rozwijalnego */
+        .sidebar .dropdown-toggle::after {
+            display: block;
+            position: absolute;
+            top: 50%;
+            right: 20px;
+            transform: translateY(-50%);
+        }
+
+        .sidebar ul ul a {
+            padding-left: 40px !important;
+            background: #2c3136;
+        }
+    </style>
 </head>
 <body>
-<div class="wrapper">
+<div class="wrapper d-flex">
     <!-- Sidebar -->
     <nav id="sidebar" class="sidebar">
         <div class="sidebar-header">
-            <h3>GastroManagement</h3>
+            <h3 class="text-center py-4">GastroApp</h3>
         </div>
 
         <ul class="list-unstyled components">
-            <li>
+            <li th:class="${#httpServletRequest.requestURI == '/gastro/dashboard' ? 'active' : ''}">
                 <a th:href="@{/dashboard}">
-                    <i class="fas fa-tachometer-alt"></i> Pulpit
+                    <i class="fas fa-tachometer-alt me-2"></i> Pulpit
                 </a>
             </li>
-            <li>
+            <li th:class="${#httpServletRequest.requestURI.startsWith('/gastro/inventory') ? 'active' : ''}">
                 <a href="#inventorySubmenu" data-bs-toggle="collapse" aria-expanded="false" class="dropdown-toggle">
-                    <i class="fas fa-warehouse"></i> Magazyn
+                    <i class="fas fa-warehouse me-2"></i> Magazyn
                 </a>
-                <ul class="collapse list-unstyled" id="inventorySubmenu">
-                    <li>
-                        <a th:href="@{/templates/inventory}">
-                            <i class="fas fa-boxes"></i> Produkty
+                <ul class="collapse list-unstyled" id="inventorySubmenu"
+                    th:classappend="${#httpServletRequest.requestURI.startsWith('/gastro/inventory') ? 'show' : ''}">
+                    <li th:class="${#httpServletRequest.requestURI == '/gastro/inventory' ? 'active' : ''}">
+                        <a th:href="@{/inventory}">
+                            <i class="fas fa-boxes me-2"></i> Produkty
                         </a>
                     </li>
-                    <li>
-                        <a th:href="@{/templates/inventory/low-stock}">
-                            <i class="fas fa-exclamation-triangle"></i> Niskie stany
+                    <li th:class="${#httpServletRequest.requestURI == '/gastro/inventory/low-stock' ? 'active' : ''}">
+                        <a th:href="@{/inventory/low-stock}">
+                            <i class="fas fa-exclamation-triangle me-2"></i> Niskie stany
                         </a>
                     </li>
-                    <li>
-                        <a th:href="@{/templates/inventory/categories}">
-                            <i class="fas fa-tags"></i> Kategorie
+                    <li th:class="${#httpServletRequest.requestURI.startsWith('/gastro/inventory/categories') ? 'active' : ''}">
+                        <a th:href="@{/inventory/categories}">
+                            <i class="fas fa-tags me-2"></i> Kategorie
                         </a>
                     </li>
-                    <li>
-                        <a th:href="@{/templates/inventory/deliveries}">
-                            <i class="fas fa-truck"></i> Dostawy
+                    <li th:class="${#httpServletRequest.requestURI.startsWith('/gastro/inventory/deliveries') ? 'active' : ''}">
+                        <a th:href="@{/inventory/deliveries}">
+                            <i class="fas fa-truck me-2"></i> Dostawy
                         </a>
                     </li>
                 </ul>
             </li>
-            <li>
+            <li th:class="${#httpServletRequest.requestURI.startsWith('/gastro/finance') ? 'active' : ''}">
                 <a href="#financeSubmenu" data-bs-toggle="collapse" aria-expanded="false" class="dropdown-toggle">
-                    <i class="fas fa-money-bill-wave"></i> Finanse
+                    <i class="fas fa-money-bill-wave me-2"></i> Finanse
                 </a>
-                <ul class="collapse list-unstyled" id="financeSubmenu">
-                    <li>
+                <ul class="collapse list-unstyled" id="financeSubmenu"
+                    th:classappend="${#httpServletRequest.requestURI.startsWith('/gastro/finance') ? 'show' : ''}">
+                    <li th:class="${#httpServletRequest.requestURI == '/gastro/finance/daily-report' ? 'active' : ''}">
                         <a th:href="@{/finance/daily-report}">
-                            <i class="fas fa-chart-line"></i> Raport dzienny
+                            <i class="fas fa-chart-line me-2"></i> Raport dzienny
                         </a>
                     </li>
-                    <li>
+                    <li th:class="${#httpServletRequest.requestURI == '/gastro/finance/monthly-report' ? 'active' : ''}">
                         <a th:href="@{/finance/monthly-report}">
-                            <i class="fas fa-chart-bar"></i> Raport miesięczny
+                            <i class="fas fa-chart-bar me-2"></i> Raport miesięczny
                         </a>
                     </li>
-                    <li>
+                    <li th:class="${#httpServletRequest.requestURI == '/gastro/finance/expenses' ? 'active' : ''}">
                         <a th:href="@{/finance/expenses}">
-                            <i class="fas fa-file-invoice-dollar"></i> Wydatki
+                            <i class="fas fa-file-invoice-dollar me-2"></i> Wydatki
                         </a>
                     </li>
                 </ul>
             </li>
-            <li>
+            <li th:class="${#httpServletRequest.requestURI.startsWith('/gastro/schedule') ? 'active' : ''}">
                 <a href="#scheduleSubmenu" data-bs-toggle="collapse" aria-expanded="false" class="dropdown-toggle">
-                    <i class="fas fa-calendar-alt"></i> Harmonogramy
+                    <i class="fas fa-calendar-alt me-2"></i> Harmonogramy
                 </a>
-                <ul class="collapse list-unstyled" id="scheduleSubmenu">
-                    <li>
+                <ul class="collapse list-unstyled" id="scheduleSubmenu"
+                    th:classappend="${#httpServletRequest.requestURI.startsWith('/gastro/schedule') ? 'show' : ''}">
+                    <li th:class="${#httpServletRequest.requestURI == '/gastro/schedule/view' ? 'active' : ''}">
                         <a th:href="@{/schedule/view}">
-                            <i class="fas fa-calendar-week"></i> Przeglądaj
+                            <i class="fas fa-calendar-week me-2"></i> Przeglądaj
                         </a>
                     </li>
-                    <li>
+                    <li th:class="${#httpServletRequest.requestURI == '/gastro/schedule/edit' ? 'active' : ''}">
                         <a th:href="@{/schedule/edit}">
-                            <i class="fas fa-user-clock"></i> Edytuj
+                            <i class="fas fa-user-clock me-2"></i> Edytuj
                         </a>
                     </li>
                 </ul>
             </li>
-            <li>
+            <li th:class="${#httpServletRequest.requestURI.startsWith('/gastro/employees') ? 'active' : ''}">
                 <a href="#employeesSubmenu" data-bs-toggle="collapse" aria-expanded="false" class="dropdown-toggle">
-                    <i class="fas fa-users"></i> Pracownicy
+                    <i class="fas fa-users me-2"></i> Pracownicy
                 </a>
-                <ul class="collapse list-unstyled" id="employeesSubmenu">
-                    <li>
+                <ul class="collapse list-unstyled" id="employeesSubmenu"
+                    th:classappend="${#httpServletRequest.requestURI.startsWith('/gastro/employees') ? 'show' : ''}">
+                    <li th:class="${#httpServletRequest.requestURI == '/gastro/employees' ? 'active' : ''}">
                         <a th:href="@{/employees}">
-                            <i class="fas fa-user-friends"></i> Lista pracowników
+                            <i class="fas fa-user-friends me-2"></i> Lista pracowników
                         </a>
                     </li>
-                    <li>
+                    <li th:class="${#httpServletRequest.requestURI == '/gastro/employees/tasks' ? 'active' : ''}">
                         <a th:href="@{/employees/tasks}">
-                            <i class="fas fa-tasks"></i> Zadania
+                            <i class="fas fa-tasks me-2"></i> Zadania
                         </a>
                     </li>
                 </ul>
             </li>
-            <li>
+            <li th:class="${#httpServletRequest.requestURI == '/gastro/settings' ? 'active' : ''}">
                 <a th:href="@{/settings}">
-                    <i class="fas fa-cog"></i> Ustawienia
+                    <i class="fas fa-cog me-2"></i> Ustawienia
                 </a>
             </li>
         </ul>
 
         <div class="sidebar-footer">
-            <p class="text-muted small mb-0">GastroManagement &copy; 2025</p>
+            <p class="text-muted small mb-0 text-center">GastroManagement &copy; 2025</p>
         </div>
     </nav>
 
     <!-- Main Content -->
-    <div id="content">
+    <div id="content" class="content-wrapper">
         <!-- Top Navbar -->
-        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <nav class="navbar navbar-expand-lg navbar-light bg-light shadow-sm">
             <div class="container-fluid">
                 <button type="button" id="sidebarCollapse" class="btn btn-primary">
                     <i class="fas fa-bars"></i>
@@ -137,7 +177,7 @@
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
                                data-bs-toggle="dropdown" aria-expanded="false">
-                                <i class="fas fa-user-circle"></i> Administrator
+                                <i class="fas fa-user-circle me-1"></i> Administrator
                             </a>
                             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
                                 <li><a class="dropdown-item" th:href="@{/profile}">Profil</a></li>
@@ -167,13 +207,33 @@
 <script th:src="@{/webjars/bootstrap/5.2.3/js/bootstrap.bundle.min.js}"></script>
 
 <!-- Custom JavaScript -->
-<script th:src="@{/static/js/main.js}"></script>
-
 <script>
     // Sidebar toggle
-    $(document).ready(function () {
-        $('#sidebarCollapse').on('click', function () {
-            $('#sidebar').toggleClass('active');
+    document.addEventListener('DOMContentLoaded', function() {
+        const sidebarCollapse = document.getElementById('sidebarCollapse');
+        const sidebar = document.getElementById('sidebar');
+
+        if (sidebarCollapse && sidebar) {
+            sidebarCollapse.addEventListener('click', function() {
+                sidebar.classList.toggle('active');
+            });
+        }
+
+        // Inicjalizacja tooltipów
+        const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+        if (tooltipTriggerList.length > 0) {
+            const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl));
+        }
+
+        // Automatyczne zamykanie alertów po 5 sekundach
+        const alerts = document.querySelectorAll('.alert-dismissible');
+        alerts.forEach(function(alert) {
+            setTimeout(function() {
+                const closeButton = alert.querySelector('.btn-close');
+                if (closeButton) {
+                    closeButton.click();
+                }
+            }, 5000);
         });
     });
 </script>
