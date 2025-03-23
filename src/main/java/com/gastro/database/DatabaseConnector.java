@@ -6,6 +6,7 @@ import java.sql.SQLException;
 import java.util.Properties;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.File;
 
 /**
  * Klasa zarządzająca połączeniem z bazą danych MySQL
@@ -19,26 +20,55 @@ public class DatabaseConnector {
 
     // Konstruktor prywatny - wzorzec Singleton
     private DatabaseConnector() {
-        try {
-            // Wczytywanie konfiguracji z pliku properties
-            Properties props = new Properties();
-            props.load(new FileInputStream("config.properties"));
+        loadConfiguration();
+    }
 
-            this.url = props.getProperty("db.url");
-            this.username = props.getProperty("db.username");
-            this.password = props.getProperty("db.password");
+    /**
+     * Wczytuje konfigurację połączenia z pliku lub ustawia wartości domyślne
+     */
+    private void loadConfiguration() {
+        // Ścieżki, gdzie może znajdować się plik konfiguracyjny
+        String[] configPaths = {
+                "config.properties",
+                "src/main/resources/config.properties",
+                System.getProperty("user.dir") + "/config.properties"
+        };
 
-            // Alternatywnie można ustawić wartości bezpośrednio (nie zalecane dla produkcji)
-            // this.url = "jdbc:mysql://localhost:3306/gastro_management";
-            // this.username = "root";
-            // this.password = "password";
+        boolean configLoaded = false;
 
-        } catch (IOException e) {
-            System.err.println("Nie można wczytać konfiguracji: " + e.getMessage());
-            // Wartości domyślne w przypadku błędu
-            this.url = "jdbc:mysql://localhost:3306/gastro_management";
+        // Próba wczytania pliku z różnych lokalizacji
+        for (String path : configPaths) {
+            File configFile = new File(path);
+            if (configFile.exists()) {
+                try {
+                    Properties props = new Properties();
+                    props.load(new FileInputStream(configFile));
+
+                    this.url = props.getProperty("db.url");
+                    this.username = props.getProperty("db.username");
+                    this.password = props.getProperty("db.password");
+
+                    System.out.println("Wczytano konfigurację z: " + path);
+                    configLoaded = true;
+                    break;
+                } catch (IOException e) {
+                    System.err.println("Błąd podczas wczytywania " + path + ": " + e.getMessage());
+                }
+            }
+        }
+
+        // Jeśli nie udało się wczytać konfiguracji, używamy wartości twardych
+        if (!configLoaded) {
+            System.err.println("Nie znaleziono pliku config.properties. Używam wartości domyślnych.");
+            this.url = "jdbc:mysql://localhost:3306/gastro_management?useSSL=false&serverTimezone=UTC";
             this.username = "root";
-            this.password = "";
+            this.password = ""; // puste hasło - prawdopodobnie to jest przyczyną błędu
+
+            // Wypisz instrukcję dla użytkownika
+            System.out.println("Utwórz plik config.properties w katalogu głównym projektu z następującą zawartością:");
+            System.out.println("db.url=jdbc:mysql://localhost:3306/gastro_management?useSSL=false&serverTimezone=UTC");
+            System.out.println("db.username=root");
+            System.out.println("db.password=twoje_haslo");
         }
     }
 
@@ -63,6 +93,10 @@ public class DatabaseConnector {
             try {
                 // Załadowanie sterownika JDBC (opcjonalne dla nowszych wersji Javy)
                 Class.forName("com.mysql.cj.jdbc.Driver");
+
+                // Wyświetlenie informacji o próbie połączenia (bez hasła)
+                System.out.println("Próba połączenia z bazą danych: " + url);
+                System.out.println("Użytkownik: " + username);
 
                 // Utworzenie połączenia
                 connection = DriverManager.getConnection(url, username, password);
