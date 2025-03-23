@@ -1,22 +1,50 @@
 package com.gastro.inventory;
 
+import javax.persistence.*;
 import java.math.BigDecimal;
 import java.util.Date;
 
 /**
  * Klasa reprezentująca produkt w magazynie
  */
+@Entity
+@Table(name = "products")
 public class Product {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "product_id")
     private int productId;
+
+    @Column(name = "category_id")
     private Integer categoryId;
+
+    @Transient
     private String categoryName;
+
+    @Column(name = "product_name", nullable = false)
     private String productName;
+
+    @Column(name = "description", columnDefinition = "TEXT")
     private String description;
+
+    @Column(name = "unit", nullable = false)
     private String unit;
+
+    @Column(name = "purchase_price", nullable = false)
     private BigDecimal purchasePrice;
+
+    @Column(name = "stock_quantity")
     private BigDecimal stockQuantity;
+
+    @Column(name = "minimum_quantity")
     private BigDecimal minimumQuantity;
+
+    @Column(name = "expiry_date")
+    @Temporal(TemporalType.DATE)
     private Date expiryDate;
+
+    // Pozostała część klasy pozostaje bez zmian...
 
     // Konstruktor domyślny
     public Product() {
@@ -36,7 +64,7 @@ public class Product {
         this.expiryDate = expiryDate;
     }
 
-    // Gettery i settery
+    // Gettery i settery pozostają bez zmian...
     public int getProductId() {
         return productId;
     }
@@ -122,7 +150,8 @@ public class Product {
      * @return true jeśli stan jest niski, false w przeciwnym razie
      */
     public boolean isLowStock() {
-        return stockQuantity.compareTo(minimumQuantity) <= 0;
+        return stockQuantity != null && minimumQuantity != null &&
+                stockQuantity.compareTo(minimumQuantity) <= 0;
     }
 
     /**
@@ -130,7 +159,8 @@ public class Product {
      * @return wartość zapasów
      */
     public BigDecimal getStockValue() {
-        return stockQuantity.multiply(purchasePrice);
+        return stockQuantity != null && purchasePrice != null ?
+                stockQuantity.multiply(purchasePrice) : BigDecimal.ZERO;
     }
 
     @Override

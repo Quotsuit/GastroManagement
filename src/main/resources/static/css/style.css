@@ -1,0 +1,163 @@
+/* ============= MAIN STYLES ============= */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f8f9fc;
+    font-size: 0.9rem;
+}
+
+.wrapper {
+    display: flex;
+    width: 100%;
+    align-items: stretch;
+}
+
+/* ============= SIDEBAR STYLES ============= */
+.sidebar {
+    min-width: 250px;
+    max-width: 250px;
+    background: #343a40;
+    color: #fff;
+    transition: all 0.3s;
+    min-height: 100vh;
+    position: relative;
+}
+
+.sidebar.active {
+    margin-left: -250px;
+}
+
+.sidebar .sidebar-header {
+    padding: 20px;
+    background: #212529;
+}
+
+.sidebar ul.components {
+    padding: 20px 0;
+    border-bottom: 1px solid #4e555b;
+}
+
+.sidebar ul p {
+    color: #fff;
+    padding: 10px;
+}
+
+.sidebar ul li a {
+    padding: 10px 15px;
+    display: block;
+    color: #c2c7d0;
+    text-decoration: none;
+    transition: all 0.3s;
+}
+
+.sidebar ul li a:hover {
+    color: #ffffff;
+    background: #4e555b;
+}
+
+.sidebar ul li.active > a, a[aria-expanded="true"] {
+    color: #fff;
+    background: #4e555b;
+}
+
+.sidebar ul ul a {
+    font-size: 0.9em !important;
+    padding-left: 40px !important;
+    background: #2c3136;
+}
+
+.sidebar-footer {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    padding: 15px;
+    background: #212529;
+    text-align: center;
+}
+
+/* ============= CONTENT STYLES ============= */
+#content {
+    width: 100%;
+    padding: 0;
+    min-height: 100vh;
+    transition: all 0.3s;
+    position: relative;
+}
+
+/* ============= NAVBAR STYLES ============= */
+.navbar {
+    padding: 15px 10px;
+    background: #fff;
+    border: none;
+    border-radius: 0;
+    margin-bottom: 20px;
+    box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+}
+
+.navbar-btn {
+    box-shadow: none;
+    outline: none !important;
+    border: none;
+}
+
+/* ============= CARD STYLES ============= */
+.card {
+    border: none;
+    box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+    margin-bottom: 1.5rem;
+}
+
+.card-header {
+    background-color: #f8f9fc;
+    border-bottom: 1px solid #e3e6f0;
+    padding: 0.75rem 1.25rem;
+}
+
+.card-header h6 {
+    font-weight: 700;
+    margin: 0;
+}
+
+/* ============= TABLE STYLES ============= */
+.table th {
+    font-weight: 600;
+    color: #5a5c69;
+}
+
+.table-hover tbody tr:hover {
+    background-color: rgba(0, 123, 255, 0.05);
+}
+
+/* ============= BOOTSTRAP OVERRIDES ============= */
+.btn-primary {
+    background-color: #4e73df;
+    border-color: #4e73df;
+}
+
+.btn-primary:hover {
+    background-color: #2e59d9;
+    border-color: #2653d4;
+}
+
+.text-primary {
+    color: #4e73df !important;
+}
+
+.bg-primary {
+    background-color: #4e73df !important;
+}
+
+/* ============= MEDIA QUERIES ============= */
+@media (max-width: 768px) {
+    .sidebar {
+        margin-left: -250px;
+    }
+    .sidebar.active {
+        margin-left: 0;
+    }
+    .sidebar .sidebar-header h3 {
+        display: none;
+    }
+    .sidebar.active .sidebar-header h3 {
+        display: block;
+    }
+}

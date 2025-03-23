@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="pl" xmlns:th="http://www.thymeleaf.org" th:fragment="layout(title, content)">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:replace="${title}">GastroManagement</title>
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" th:href="@{/webjars/bootstrap/5.2.3/css/bootstrap.min.css}">
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" th:href="@{/webjars/font-awesome/6.3.0/css/all.min.css}">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" th:href="@{/static/css/style.css}">
+</head>
+<body>
+<div class="wrapper">
+    <!-- Sidebar -->
+    <nav id="sidebar" class="sidebar">
+        <div class="sidebar-header">
+            <h3>GastroManagement</h3>
+        </div>
+
+        <ul class="list-unstyled components">
+            <li>
+                <a th:href="@{/dashboard}">
+                    <i class="fas fa-tachometer-alt"></i> Pulpit
+                </a>
+            </li>
+            <li>
+                <a href="#inventorySubmenu" data-bs-toggle="collapse" aria-expanded="false" class="dropdown-toggle">
+                    <i class="fas fa-warehouse"></i> Magazyn
+                </a>
+                <ul class="collapse list-unstyled" id="inventorySubmenu">
+                    <li>
+                        <a th:href="@{/templates/inventory}">
+                            <i class="fas fa-boxes"></i> Produkty
+                        </a>
+                    </li>
+                    <li>
+                        <a th:href="@{/templates/inventory/low-stock}">
+                            <i class="fas fa-exclamation-triangle"></i> Niskie stany
+                        </a>
+                    </li>
+                    <li>
+                        <a th:href="@{/templates/inventory/categories}">
+                            <i class="fas fa-tags"></i> Kategorie
+                        </a>
+                    </li>
+                    <li>
+                        <a th:href="@{/templates/inventory/deliveries}">
+                            <i class="fas fa-truck"></i> Dostawy
+                        </a>
+                    </li>
+                </ul>
+            </li>
+            <li>
+                <a href="#financeSubmenu" data-bs-toggle="collapse" aria-expanded="false" class="dropdown-toggle">
+                    <i class="fas fa-money-bill-wave"></i> Finanse
+                </a>
+                <ul class="collapse list-unstyled" id="financeSubmenu">
+                    <li>
+                        <a th:href="@{/finance/daily-report}">
+                            <i class="fas fa-chart-line"></i> Raport dzienny
+                        </a>
+                    </li>
+                    <li>
+                        <a th:href="@{/finance/monthly-report}">
+                            <i class="fas fa-chart-bar"></i> Raport miesięczny
+                        </a>
+                    </li>
+                    <li>
+                        <a th:href="@{/finance/expenses}">
+                            <i class="fas fa-file-invoice-dollar"></i> Wydatki
+                        </a>
+                    </li>
+                </ul>
+            </li>
+            <li>
+                <a href="#scheduleSubmenu" data-bs-toggle="collapse" aria-expanded="false" class="dropdown-toggle">
+                    <i class="fas fa-calendar-alt"></i> Harmonogramy
+                </a>
+                <ul class="collapse list-unstyled" id="scheduleSubmenu">
+                    <li>
+                        <a th:href="@{/schedule/view}">
+                            <i class="fas fa-calendar-week"></i> Przeglądaj
+                        </a>
+                    </li>
+                    <li>
+                        <a th:href="@{/schedule/edit}">
+                            <i class="fas fa-user-clock"></i> Edytuj
+                        </a>
+                    </li>
+                </ul>
+            </li>
+            <li>
+                <a href="#employeesSubmenu" data-bs-toggle="collapse" aria-expanded="false" class="dropdown-toggle">
+                    <i class="fas fa-users"></i> Pracownicy
+                </a>
+                <ul class="collapse list-unstyled" id="employeesSubmenu">
+                    <li>
+                        <a th:href="@{/employees}">
+                            <i class="fas fa-user-friends"></i> Lista pracowników
+                        </a>
+                    </li>
+                    <li>
+                        <a th:href="@{/employees/tasks}">
+                            <i class="fas fa-tasks"></i> Zadania
+                        </a>
+                    </li>
+                </ul>
+            </li>
+            <li>
+                <a th:href="@{/settings}">
+                    <i class="fas fa-cog"></i> Ustawienia
+                </a>
+            </li>
+        </ul>
+
+        <div class="sidebar-footer">
+            <p class="text-muted small mb-0">GastroManagement &copy; 2025</p>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div id="content">
+        <!-- Top Navbar -->
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+            <div class="container-fluid">
+                <button type="button" id="sidebarCollapse" class="btn btn-primary">
+                    <i class="fas fa-bars"></i>
+                </button>
+
+                <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                    <ul class="navbar-nav ms-auto">
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
+                               data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="fas fa-user-circle"></i> Administrator
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                                <li><a class="dropdown-item" th:href="@{/profile}">Profil</a></li>
+                                <li><a class="dropdown-item" th:href="@{/settings}">Ustawienia</a></li>
+                                <li>
+                                    <hr class="dropdown-divider">
+                                </li>
+                                <li><a class="dropdown-item" th:href="@{/logout}">Wyloguj</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Content -->
+        <div class="container-fluid p-4">
+            <div th:replace="${content}">
+                <!-- Zawartość strony -->
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- JavaScript Libraries -->
+<script th:src="@{/webjars/jquery/3.6.3/jquery.min.js}"></script>
+<script th:src="@{/webjars/bootstrap/5.2.3/js/bootstrap.bundle.min.js}"></script>
+
+<!-- Custom JavaScript -->
+<script th:src="@{/static/js/main.js}"></script>
+
+<script>
+    // Sidebar toggle
+    $(document).ready(function () {
+        $('#sidebarCollapse').on('click', function () {
+            $('#sidebar').toggleClass('active');
+        });
+    });
+</script>
+</body>
+</html>
