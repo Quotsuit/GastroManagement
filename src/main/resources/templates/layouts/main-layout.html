@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html lang="pl" xmlns:th="http://www.thymeleaf.org" th:fragment="layout(title, content)">
+<html lang="pl" xmlns:th="http://www.thymeleaf.org" th:fragment="layout(title, content)"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -52,6 +53,8 @@
 </head>
 <body>
 <div class="wrapper d-flex">
+
+
     <!-- Sidebar -->
     <nav id="sidebar" class="sidebar">
         <div class="sidebar-header">
@@ -163,6 +166,8 @@
         </div>
     </nav>
 
+
+
     <!-- Main Content -->
     <div id="content" class="content-wrapper">
         <!-- Top Navbar -->
@@ -172,12 +177,14 @@
                     <i class="fas fa-bars"></i>
                 </button>
 
+                <!-- Inside the navbar -->
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
                     <ul class="navbar-nav ms-auto">
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
                                data-bs-toggle="dropdown" aria-expanded="false">
-                                <i class="fas fa-user-circle me-1"></i> Administrator
+                                <i class="fas fa-user-circle me-1"></i>
+                                <span sec:authentication="name">Użytkownik</span>
                             </a>
                             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
                                 <li><a class="dropdown-item" th:href="@{/profile}">Profil</a></li>
@@ -185,7 +192,13 @@
                                 <li>
                                     <hr class="dropdown-divider">
                                 </li>
-                                <li><a class="dropdown-item" th:href="@{/logout}">Wyloguj</a></li>
+                                <li>
+                                    <form th:action="@{/logout}" method="post" style="display: inline;">
+                                        <button type="submit" class="dropdown-item">
+                                            <i class="fas fa-sign-out-alt me-1"></i> Wyloguj
+                                        </button>
+                                    </form>
+                                </li>
                             </ul>
                         </li>
                     </ul>

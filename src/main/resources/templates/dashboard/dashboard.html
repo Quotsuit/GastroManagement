@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layouts/main-layout :: layout(~{::title}, ~{::section})}">
+<head>
+    <title>Dashboard - GastroManagement</title>
+</head>
+<body>
+<section class="content">
+    <div class="container-fluid">
+        <div class="d-sm-flex align-items-center justify-content-between mb-4">
+            <h1 class="h3 mb-0 text-gray-800">Dashboard</h1>
+        </div>
+
+        <!-- Karty informacyjne -->
+        <div class="row">
+            <div class="col-xl-3 col-md-6 mb-4">
+                <div class="card border-left-primary shadow h-100 py-2">
+                    <div class="card-body">
+                        <div class="row no-gutters align-items-center">
+                            <div class="col mr-2">
+                                <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                    Przychody (Miesięczne)
+                                </div>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800" th:text="${dashboard.monthlyRevenue + ' PLN'}">8,250 PLN</div>
+                            </div>
+                            <div class="col-auto">
+                                <i class="fas fa-calendar fa-2x text-gray-300"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xl-3 col-md-6 mb-4">
+                <div class="card border-left-success shadow h-100 py-2">
+                    <div class="card-body">
+                        <div class="row no-gutters align-items-center">
+                            <div class="col mr-2">
+                                <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                    Zysk (Roczny)
+                                </div>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800" th:text="${dashboard.yearlyProfit + ' PLN'}">215,000 PLN</div>
+                            </div>
+                            <div class="col-auto">
+                                <i class="fas fa-dollar-sign fa-2x text-gray-300"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xl-3 col-md-6 mb-4">
+                <div class="card border-left-info shadow h-100 py-2">
+                    <div class="card-body">
+                        <div class="row no-gutters align-items-center">
+                            <div class="col mr-2">
+                                <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                                    Zadania
+                                </div>
+                                <div class="row no-gutters align-items-center">
+                                    <div class="col-auto">
+                                        <div class="h5 mb-0 mr-3 font-weight-bold text-gray-800" th:text="${dashboard.taskCompletionPercentage + '%'}">80%</div>
+                                    </div>
+                                    <div class="col">
+                                        <div class="progress progress-sm mr-2">
+                                            <div class="progress-bar bg-info" role="progressbar"
+                                                 th:style="'width: ' + ${dashboard.taskCompletionPercentage} + '%'"
+                                                 th:aria-valuenow="${dashboard.taskCompletionPercentage}"
+                                                 aria-valuemin="0" aria-valuemax="100"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-auto">
+                                <i class="fas fa-clipboard-list fa-2x text-gray-300"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xl-3 col-md-6 mb-4">
+                <div class="card border-left-warning shadow h-100 py-2">
+                    <div class="card-body">
+                        <div class="row no-gutters align-items-center">
+                            <div class="col mr-2">
+                                <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                    Produkty (Niski stan)
+                                </div>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800" th:text="${dashboard.lowStockProductsCount}">5</div>
+                            </div>
+                            <div class="col-auto">
+                                <i class="fas fa-exclamation-triangle fa-2x text-gray-300"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Podsumowanie -->
+        <div class="row">
+            <div class="col-lg-6 mb-4">
+                <div class="card shadow mb-4">
+                    <div class="card-header py-3">
+                        <h6 class="m-0 font-weight-bold text-primary">Ostatnie dostawy</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-bordered" width="100%" cellspacing="0">
+                                <thead>
+                                <tr>
+                                    <th>Data</th>
+                                    <th>Dostawca</th>
+                                    <th>Wartość</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr th:each="delivery : ${dashboard.recentDeliveries}">
+                                    <td th:text="${delivery.date}">2023-03-31</td>
+                                    <td th:text="${delivery.supplierName}">Makro Cash & Carry</td>
+                                    <td th:text="${delivery.value + ' PLN'}">2,500 PLN</td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <a th:href="@{/inventory/deliveries}" class="btn btn-primary btn-sm mt-2">Zobacz wszystkie</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-6 mb-4">
+                <div class="card shadow mb-4">
+                    <div class="card-header py-3">
+                        <h6 class="m-0 font-weight-bold text-primary">Statystyki sprzedaży</h6>
+                    </div>
+                    <div class="card-body">
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                Liczba transakcji (dzisiaj)
+                                <span class="badge bg-primary rounded-pill" th:text="${dashboard.todayTransactionsCount}">42</span>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                Średnia wartość zamówienia
+                                <span class="badge bg-info rounded-pill" th:text="${dashboard.averageOrderValue + ' PLN'}">78 PLN</span>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                Najczęściej zamawiany produkt
+                                <span class="badge bg-success rounded-pill" th:text="${dashboard.mostOrderedProduct}">Pizza Margherita</span>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                Liczba aktywnych pracowników
+                                <span class="badge bg-warning rounded-pill" th:text="${dashboard.activeEmployeesCount}">8</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+</body>
+</html>
